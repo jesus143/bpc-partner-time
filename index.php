@@ -37,15 +37,26 @@
         </div>
       </div>
       <div id="home-date">
+
+
+
         <h3>Choose Date</h3>
+
+
         <?php
-        require_once($_SERVER['DOCUMENT_ROOT'] . "/wp-load.php");
+
+          require_once($_SERVER['DOCUMENT_ROOT'] . "/wp-load.php");
+
+          $date = array();
+
           $partner_id = $_GET['business'];
           $dateatthemo = date('H:i');
-          $newcon = new wpdb('dbo639369002','1qazxsw2!QAZXSW@','db639369002','db639369002.db.1and1.com');
-          $rows = $newcon->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id && close = 'no'");      
-          $date = array();  
-            foreach ($rows as $obj) :
+
+        $newcon = new wpdb('dbo639369002','1qazxsw2!QAZXSW@','db639369002','db639369002.db.1and1.com');
+        $rows = $newcon->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id && close = 'no'");
+
+
+          foreach ($rows as $obj) :
               if((strtotime($dateatthemo) < strtotime($obj->open_to)) and (strtotime($obj->date) == strtotime(date("Y-m-d"))) or (strtotime($obj->date) > strtotime(date("Y-m-d")))) {
                   $originalDate = $obj->date;
                   $newDate = date("Y-n-j", strtotime($originalDate));
@@ -53,9 +64,16 @@
                   $newDate2 = $newDate1[2].'-'.$newDate1[1].'-'.$newDate1[0];
                   $date[] = $newDate2;
               }
-            endforeach;
-            $datetofetch = json_encode($date);
-            echo '<input type="hidden" id="datetofetch" name="datetofetch" value='.$datetofetch.' />';
+          endforeach;
+
+          $datetofetch = json_encode($date);
+
+
+
+
+
+          echo '<input type="hidden" id="datetofetch" name="datetofetch" value='.$datetofetch.' />';
+
         ?>        
         <div id="datepicker"></div>
         <p style="display: none;">Date Choosen: <input type="text" name="callbackdate" id="callbackdate"></p>

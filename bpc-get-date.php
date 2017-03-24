@@ -13,12 +13,9 @@
 	$rows = $mydb->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id
 			&& date = '$datetofetch'");
 
-//    print_r_pre($rows);
-
+    //  print_r_pre($rows);
     if(!empty($rows)) {
-
-//        print " not empty from wp_bpc_appointment_settings database table ";
-
+        // print " not empty from wp_bpc_appointment_settings database table ";
         /** Initialized the retrieved data from database table phone settings in testing */
         foreach ($rows as $obj) :
             $date = $obj->date;
