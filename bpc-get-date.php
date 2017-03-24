@@ -13,9 +13,12 @@
 	$rows = $mydb->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id
 			&& date = '$datetofetch'");
 
-    //  print_r_pre($rows);
+//    print_r_pre($rows);
+
     if(!empty($rows)) {
-        // print " not empty from wp_bpc_appointment_settings database table ";
+
+        //print " not empty from wp_bpc_appointment_settings database table ";
+
         /** Initialized the retrieved data from database table phone settings in testing */
         foreach ($rows as $obj) :
             $date = $obj->date;
@@ -33,20 +36,18 @@
 
     } else {
 
-        print " not empty from wp_bpc_appointment_setting_standard database table ";
+        // print " empty from wp_bpc_appointment_setting_standard database table ";
 
         /** get standard settings */
-        $rows = $mydb->get_results("SELECT * FROM wp_bpc_appointment_setting_standard WHERE partner_id = $partner_id", ARRAY_A );
-        print_r_pre($rows);
+        $resultStandard = $mydb->get_results("SELECT * FROM wp_bpc_appointment_setting_standard WHERE partner_id = $partner_id", ARRAY_A );
+        $rows = $resultStandard[0];
 
         /** Get day based on query date */
-        $dt  = strtotime($datetofetch);
-        $day = date("D", $dt);
-        $day  = strtolower($day);
+        $day  = strtolower(date('l', strtotime($datetofetch)));
 
         /** Get specific open_from and open_to based on standard settings results */
-        $call_back_length = $rows[$day . '_open_from'];
-        $call_back_delay   = $rows[$day . '_open_to'];
+        $open_from = $rows[$day . '_open_from'];
+        $open_to   = $rows[$day . '_open_to'];
 
         /** if call back lenght is empty then set 15 mins default call back lenght */
         $call_back_delay   = $rows['call_back_delay'];
