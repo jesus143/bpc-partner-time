@@ -16,7 +16,12 @@ $(document).ready(function()
         return [false,"","unAvailable"];
       }
     }
-  $( "#datepicker" ).datepicker({ beforeShowDay: available, firstDay: 1});
+  var dateToday = new Date();
+  $( "#datepicker" ).datepicker({ 
+    beforeShowDay: available, 
+    firstDay: 1,
+    minDate: dateToday 
+  });
   $('#datepicker a.ui-state-active').removeClass('ui-state-active');
   $('#datepicker a.ui-state-hover').removeClass('ui-state-hover');
 
@@ -26,7 +31,13 @@ $(document).ready(function()
     var isNoScheduleForTheDay = data.indexOf("No Schedule Display");
       // $("#datepicker").html("");
       if(isNoScheduleForTheDay > 0) {
-        $( "#datepicker" ).datepicker({ beforeShowDay: available, minDate: 1, firstDay: 1});
+        var dateToday = new Date();
+        $( "#datepicker" ).datepicker({ 
+            beforeShowDay: available, 
+            minDate: 1, 
+            firstDay: 1, 
+            minDate: dateToday,
+        });
         $('#datepicker a.ui-state-active').removeClass('ui-state-active');
         $('#datepicker a.ui-state-hover').removeClass('ui-state-hover');
       }

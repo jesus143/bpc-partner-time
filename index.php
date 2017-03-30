@@ -10,7 +10,7 @@
         <?php while (have_posts()) : the_post(); ?>
           <div class="home-table-image">
             <img src="<?php echo $imageprof; ?>">
-          </div>
+          </div> 
           <div class="home-table-description">
             <div class="home-table-business-name">
               <h2>
