@@ -87,19 +87,29 @@ class Schedule {
 
     /**
      * filter date by custom and do override with the standard filter
+     * standard data, don't allow override with custom if book time type is "book time of day"
      */
     public function filterByCustom() {
 
         $dates = $this->filterByStandard();
 
-        foreach($dates as $index => $date) {
-            foreach($this->resultCustom as $custom){
-                if($date['date'] == $custom['date']) {
-                    $dates[$index]['close']      = $custom['close'];
+        $bookTimeType = $this->resultStandard[0]['book_time_type'];
+
+        if($bookTimeType == 'Book Time Of Day') {
+            return $dates;
+        } else {
+
+            // do override the standard data with custom for open and close dates
+            foreach ($dates as $index => $date) {
+                foreach ($this->resultCustom as $custom) {
+                    if ($date['date'] == $custom['date']) {
+                        $dates[$index]['close'] = $custom['close'];
+                    }
                 }
             }
+            return $dates;
         }
-        return $dates;
+
     }
 
     /**
