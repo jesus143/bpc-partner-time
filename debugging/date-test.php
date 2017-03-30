@@ -1,11 +1,15 @@
 <?php
 
+
+
+
 class Schedule {
 
     protected $datesFinal = [];
     protected $dates = [];
     protected $resultStandard = [];
     protected $resultCustom = [];
+    protected $totalDays = 60;
 
     function __construct($resultStandard, $resultCustom)
     {
@@ -29,11 +33,20 @@ class Schedule {
          */
         $this->resultCustom = $resultCustom;
 
+        /**
+         * Set timezone as uk
+         */
+        $this->setTimeZone();
     }
 
 
-    public function setOpenDays($totalDays=7)
+    public function setOpenDays($totalDays=0)
     {
+
+        if(empty($totalDays)) {
+            $totalDays = $this->totalDays;
+        }
+
         /**
          * get date today
          */
@@ -48,7 +61,7 @@ class Schedule {
             $dates[$i]['close'] = 'no';
             $dates[$i]['day'] = strtolower(date('l', strtotime($dates[$i]['date'])));
         }
-        $this->print_r_pre($dates, "get 7 days");
+        //$this->print_r_pre($dates, "get 7 days");
         return $dates;
     }
 
@@ -62,7 +75,7 @@ class Schedule {
             $dates[$index]['close'] = ($this->resultStandard[0][$date['day'] . '_close'] == 'yes') ? "yes" : "no";
         }
 
-        $this->print_r_pre($dates, "after filter with standard");
+        //        $this->print_r_pre($dates, "after filter with standard");
         return $dates;
     }
 
@@ -99,9 +112,47 @@ class Schedule {
         return $datesFinal;
     }
 
+
     public function getFinalDates()
     {
         return $this->removeAllClosed();
+    }
+
+
+    public function getFinalDatesFlatten()
+    {
+        $dates = $this->removeAllClosed();
+        $finalDates = [];
+        foreach($dates as $date) {
+            $finalDates[] = $date['date'];
+        }
+
+        return $finalDates;
+    }
+
+    public function getFinalDatesFlattenToJson()
+    {
+        return json_encode($this->convertToCalendarDateFormat());
+    }
+
+    public function convertToCalendarDateFormat() {
+
+        $finalDate = [];
+        $dates = $this->removeAllClosed();
+
+        foreach($dates as $date) {
+            $newDate = date("Y-n-j", strtotime($date['date']));
+            $newDate1 = explode("-", $newDate);
+            $newDate2 = $newDate1[2] . '-' . $newDate1[1] . '-' . $newDate1[0];
+            $finalDate[] = $newDate2;
+        }
+
+        return $finalDate;
+    }
+
+    public function setTimeZone($timeZone='Europe/London')
+    {
+        date_default_timezone_set($timeZone);
     }
 
     /**
@@ -121,11 +172,11 @@ $resultStandard = [
     [
         'monday_close'      => 'yes',
         'tuesday_close'     => 'yes',
-        'wednesday_close'   => 'yes',
-        'thursday_close'    => 'yes',
-        'friday_close'      => 'yes',
-        'saturday_close'    => 'no',
-        'sunday_close'      => 'no'
+        'wednesday_close'   => '',
+        'thursday_close'    => '',
+        'friday_close'      => '',
+        'saturday_close'    => '',
+        'sunday_close'      => ''
     ]
 ];
 
@@ -142,6 +193,5 @@ $resultCustom = [
 
 $schedule = new Schedule($resultStandard, $resultCustom);
 
-$schedule->print_r_pre($schedule->getFinalDates(), "Final Output");
-
+$schedule->print_r_pre($schedule->getFinalDatesFlattenToJson(), "Final Output");
 

@@ -1,0 +1,92 @@
+
+
+
+Hi Rich
+
+Update for 24, 2017
+
+1. Set time zone uk/london
+2. Set date start today1
+3. filter date by standard details
+4. filter date by custom and override standard dates by custom
+5. allow set how many dayes will show for standard, so that client can book based on standard schedule
+6. display 2months calendar with standard and custom status
+7. when click specific date check data schedule information from custom database
+8. If custom is not empty then display custom data
+9. If custom is empty then display standard data
+
+Please check now with the updates for custom, standard, snyc google calendar and book phone call integration, also i didn't touch the breaks in bookphone call since mj is coding it. please check all the update
+and write what you notice for me. Thank you.
+
+
+Regarding sync i disabled auto show popup for now because its anoying i need to find best way for this sooner, but for now
+partner needs to click authenticate in order to sync the google calendar information.
+
+
+
+Here is the detail for testing and i used testing account
+
+
+1. bpc
+   https://www.bookphonecall.com/?business=77514
+
+2. custom
+   https://testing.umbrellasupport.co.uk/custom-opening-hours/
+
+3. standard
+   https://testing.umbrellasupport.co.uk/phone-appointment-settings/
+
+4. calendar sync
+   https://testing.umbrellasupport.co.uk/google-calendar-settings/
+
+5. admin settings
+   https://testing.umbrellasupport.co.uk/wp-admin/admin.php?page=pbc-as-admin
+
+
+
+
+Probably there are some issue in design that i missed, i will check in the weekend
+
+Best regards,
+Jesus
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hi Rich,
+
+March 22, 2017
+
+Book Phone Call Merge Codes Update: Check if custom settings is empty then call standard as date time value
+Book Phone Call Merge Codes Update: Get standard settings
+Book Phone Call Merge Codes Update: Get standard day based on query date
+Book Phone Call Merge Codes Update: Get standard specific open_from and open_to based on standard settings results
+Book Phone Call Merge Codes Update: If call back lenght is empty then set 15 mins default call back lenght
+Book Phone Call Merge Codes Update: If call back delay is empty then set 15 mins default call back delay
+
+Todo tomorrow
+
+Need to ask my sister about his coding, where i can find some source files
+Display the open and close date and merge code with standard and custom
+
+
+Thanks
