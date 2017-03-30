@@ -1,3 +1,40 @@
+Set timezone london/UK
+
+
+Set callback delay for custom
+  1. based on updated at - 30m  - 11:30 - done
+  2. from starting time add callback delay and from there you can start counting - 30m - 12:00 - done
+
+Set callback delay for standard
+  1. based on starting open hour - 30m - 12:30
+  2. from starting time add callback delay and from there you can start counting - 30m - 1:00
+
+
+Set callback length for custom - done
+  1. This is based on call back length - 30m - 1:30
+
+Set callback length for standard - done
+  1. This is based on call back length - 30m - 2:00
+
+
+Only only display time when time is not already passed based on call back length -
+  1. check london timezone time - 20m - 2:20
+  2. remove the lower time and only display the ahead time of call back lenght compared to london current time - 30m - 2:50
+
+Apply break remove schedule for custom
+  1. apply filter,  remove specific schedule that conflict with the break - 30m - 3:20
+
+Apply break remove schedule for standard
+  1. apply filter, remove specific schedule that conflict with the break - 30m - 3:50
+
+
+
+
+
+
+
+
+
 Hi Sir,
 
 Update for March 30, 2017

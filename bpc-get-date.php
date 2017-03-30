@@ -7,7 +7,16 @@
     require_once($_SERVER['DOCUMENT_ROOT'] .  "/wp-content/plugins/bpc-partner-time/helper.php");
     require_once("includes/bpc_partner_time_helper.php");
 
+    date_default_timezone_set("America/Adak");
+    // date_default_timezone_set("Europe/London");
+    // ini_set('date.timezone', 'Europe/London');
+    // ini_set('date.timezone', 'Europe/London');
 
+    // date_default_timezone_set('UTC');
+
+
+
+    print " DATE TIME " . Date("Y-m-d H:i a");
     /**
      * Initialized data and variables
      */
@@ -33,26 +42,15 @@
      */
     $standardSetting = $mydb->get_results("SELECT * FROM wp_bpc_appointment_setting_standard WHERE partner_id = $partner_id ", ARRAY_A);
     $book_time_type  = $standardSetting[0]['book_time_type'];
-    // $book_time_type  = 'Book Exact Time';
-
-    //    print "<pre>";
-    //        print_r($standardSetting);
-    //    print "</pre>";
-    //    print "<br>book time type $book_time_type<br>";
-    //    print "<br>date selected  $datetofetch ";
-    //    $newDateNow = date("Y-m-d", strtotime($datenow));
-    //    print "<br>date selected new date 1  $newDateNow ";
-    //    print "Test";
 
     /**
      * Check if standard book time type is "book time of day"
      * If book time type is book time of day
      * then set check display morning, noon, evening
      */
-     if($book_time_type == 'Book Time Of Day')
-     {
+    if($book_time_type == 'Book Time Of Day') {
          //print "<br>inside book time of day if condition";
-        /**
+         /**
          * Get current day of the selected date
          */
          $day = strtolower(date('l', strtotime($datetofetch)));
@@ -98,9 +96,6 @@
           * Generate and display ui
           */
         ?>
-
-
-
          <style>
              .time-day-button li {
                  display: inline;;
@@ -110,8 +105,6 @@
              }
          </style>
          <?php
-
-
          /**
           * If morning, afternoon, and evening is empty
           */
@@ -120,13 +113,9 @@
              bpc_print_no_time_display();
          }
          else
-         { ?>
-
-
-
+         { ?> 
             <div class="home-time-box" >
-                <div class="home-time-box-heading" style="height: 43px;">
-
+                <div class="home-time-box-heading" style="height: 43px;"> 
                 </div>
                 <div class="home-time-content" style="padding:19px; height: 154px;">
                     <div class="e3ve-home-time">
@@ -164,40 +153,36 @@
             <?php
 
 
-    }
-    }
-    else
-    {
+        }
+    } else {
 
         print "<br>inside book exact time ";
 
-        $rows = $mydb->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id
-			&& date = '$datetofetch'");
+        // Get appointment settings based on specific date and partner id 
+        $rows = $mydb->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id && date = '$datetofetch'");
 
         // print_r_pre($rows);
 
         if (!empty($rows)) {
-
-            //print " not empty from wp_bpc_appointment_settings database table ";
-
+            print " from wp_bpc_appointment_settings database table ";
             /** Initialized the retrieved data from database table phone settings in testing */
             foreach ($rows as $obj) :
-                $date = $obj->date;
-                $open_from = $obj->open_from;
-                $open_to = $obj->open_to;
-                $call_back_length = $obj->call_back_length;
-                $call_back_delay = $obj->call_back_delay;
-                $updated_at = $obj->updated_at;
-                $updatepiece = explode(" ", $updated_at); // 2017-01-21 16:44:31 -yyyy-mm-dd hh:mm:ss
-                $updateddate = $updatepiece[0]; //2017-01-21
-                $updatedpiece = $updatepiece[1]; //16:44:31
-                $updatetimepiece = explode(":", $updatedpiece);
-                $updatedtime = $updatetimepiece[0] . ':' . $updatetimepiece[1];
+                $date               = $obj->date;
+                $open_from          = $obj->open_from;
+                $open_to            = $obj->open_to;
+                $call_back_length   = $obj->call_back_length;
+                $call_back_delay    = $obj->call_back_delay;
+                $updated_at         = $obj->updated_at;
+                $updatepiece        = explode(" ", $updated_at); // 2017-01-21 16:44:31 -yyyy-mm-dd hh:mm:ss
+                $updateddate        = $updatepiece[0]; //2017-01-21
+                $updatedpiece       = $updatepiece[1]; //16:44:31
+                $updatetimepiece    = explode(":", $updatedpiece);
+                $updatedtime        = $updatetimepiece[0] . ':' . $updatetimepiece[1];
             endforeach;
 
         } else {
 
-            // print " empty from wp_bpc_appointment_setting_standard database table ";
+             print " empty from wp_bpc_appointment_setting_standard database table ";
 
             /** get standard settings */
             $resultStandard = $mydb->get_results("SELECT * FROM wp_bpc_appointment_setting_standard WHERE partner_id = $partner_id", ARRAY_A);
@@ -205,17 +190,38 @@
 
             /** Get day based on query date */
             $day = strtolower(date('l', strtotime($datetofetch)));
-
+            print "<br> clicked day $day"; 
+ 
             /** Get specific open_from and open_to based on standard settings results */
             $open_from = $rows[$day . '_open_from'];
-            $open_to = $rows[$day . '_open_to'];
+            $open_to = $rows[$day . '_open_to']; 
+            print "<br> open from $open_from <br> open to $open_to"; 
 
             /** if call back lenght is empty then set 15 mins default call back lenght */
             $call_back_delay = $rows['call_back_delay'];
 
             /** if call back delay is empty then set 15 mins default call back delay */
             $call_back_length = $rows['call_back_length'];
+
+            /** specific date set */
+            $date =  $datetofetch; 
+            
+            print "<br> date $date"; 
+            /**
+             * Set updated at but this is actually the open from time of standard time
+             * @var [type]
+             */
+            $updated_at         = date('Y-m-d') . ' ' . $open_from . ':00';
+            $updatepiece        = explode(" ", $updated_at); // 2017-01-21 16:44:31 -yyyy-mm-dd hh:mm:ss
+            $updateddate        = $updatepiece[0]; //2017-01-21
+            $updatedpiece       = $updatepiece[1]; //16:44:31
+            $updatetimepiece    = explode(":", $updatedpiece);
+            $updatedtime        = $updatetimepiece[0] . ':' . $updatetimepiece[1];
+            print "<br> Updated at " .  $updated_at; 
+            print "<br> date piece  " .  $updateddate; 
+            print "<br> time peice " .  $updatedpiece;  
         }
+
 
 
         /**
@@ -231,7 +237,18 @@
         if ($call_back_delay == '') {
             $call_back_delay = '15 mins';
         }
-
+ 
+        /**
+         *  This is needed so that client can't book any of the callbacks delay
+         */  
+        $call_back_delay_1 = str_replace('mins', 'minutes', $call_back_delay); 
+        $call_back_delay_1 = str_replace('hours', 'hour', $call_back_delay_1); 
+        $time_1 = strtotime($open_from);
+        $open_from = date("H:i", strtotime($call_back_delay_1, $time_1));
+        print " <br> newTimeWithCallBackDelay $open_from"; 
+   
+        print "<br> call back length $call_back_length ";
+        print "<br> call back delay $call_back_delay ";
         // print "begin $open_from, interval $call_back_length, end $open_to date to fetch $datetofetch <br>";
 
         /**
@@ -263,8 +280,7 @@
         $container = 0;
         $counter = 0;
 
-        // print_r_pre($times);
-
+        
         /**
          * Calculate date times
          */
