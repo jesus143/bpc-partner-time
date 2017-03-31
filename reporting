@@ -1,3 +1,52 @@
+Hi Sir,
+
+Update for March 30, 2017
+
+1. Standard data, don't allow override with custom if book time type is "book time of day"
+2. Separate functions as helper from book phone call calendar
+3. Ajax request  Get current day of the selected date
+4. Get selected checked for morning, noon and evening in specific day to standard
+5. check current uk time and get status morning, noon or evening then only display button the match the day status of uk time
+6. Generate and Display ui for morning, noon, evening
+7. If morning, afternoon, and evening is empty  then display, No Schedule Display
+8. Fix ui display for morning, noon and evening
+
+Todo Tomorrow
+work with breaks, callback delay and length
+
+Thanks
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

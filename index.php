@@ -10,7 +10,7 @@
         <?php while (have_posts()) : the_post(); ?>
           <div class="home-table-image">
             <img src="<?php echo $imageprof; ?>">
-          </div> 
+          </div>
           <div class="home-table-description">
             <div class="home-table-business-name">
               <h2>
@@ -53,20 +53,19 @@
           /**
            * Execute version 2
            */
-          if($version == 2) {
+          if($version == 2)
+          {
             $newcon         = new wpdb('dbo639369002', '1qazxsw2!QAZXSW@', 'db639369002', 'db639369002.db.1and1.com');
             $resultCustom   = $newcon->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id", ARRAY_A);
             $resultStandard = $newcon->get_results("SELECT * FROM wp_bpc_appointment_setting_standard WHERE partner_id = $partner_id", ARRAY_A);
             $schedule       = new Schedule($resultStandard, $resultCustom);
-            //            $schedule->print_r_pre($resultCustom, "custom");
-            //            $schedule->print_r_pre($resultStandard, "standard");
             echo '<input type="hidden" id="datetofetch" name="datetofetch" value=' . $schedule->getFinalDatesFlattenToJson() . ' />';
           }
-
-          /**
-           * Execute version 1
-           */
-          elseif($version==1) {
+          elseif ($version==1)
+          {
+            /**
+             * Execute version 1
+             */
             $newcon = new wpdb('dbo639369002','1qazxsw2!QAZXSW@','db639369002','db639369002.db.1and1.com');
             $rows = $newcon->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id && close = 'no'");
             foreach ($rows as $obj) :
