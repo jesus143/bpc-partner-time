@@ -1,4 +1,61 @@
 <?php
+
+    /**
+     *  This will convert the serialized format of data 
+     */
+   function bpc_convertToPropperDateTime($var_array)
+    { 
+        // bpc_as_print_r_pre($var_array); 
+ 
+        // if(!empty($var_array)) {  
+            $data  = [];     
+            $index = 0;
+            $c     = 1;
+            $custom_break = [];  
+            foreach($var_array as $b) {      
+                if($c==1) {
+                    $custom_break[$index]['break_from'] .= $b;
+                } else if ($c==2) {
+                    $custom_break[$index]['break_from'] .= ':' . $b; 
+                } else if ($c==3) {
+                    $custom_break[$index]['break_to'] .= $b; 
+                } else if ($c==4){
+                    $custom_break[$index]['break_to'] .= ':' . $b;  
+                }   
+                $c++;
+                if($c%5 == 0) {
+                    $c=1;
+                    $index++;
+                } 
+            }     
+            return $custom_break; 
+        // } else {
+        //     return null;
+        // }
+    }
+
+
+function bpc_isAppointmentConflictWithBreak($resultBreaks, $timeA) { 
+
+
+// print "<pre>"; 
+//     print_r($resultBreaks); 
+// print "</pre>";   
+    if(!empty($resultBreaks)) {  
+        foreach ($resultBreaks as  $break) {
+            //print "<br>  if(($timeA >=  " . $break['break_from'] .  " ) and ($timeA <  " . $break['break_to'] . ")) "; 
+            if(($timeA >= $break['break_from']) and ($timeA < $break['break_to']))  {  
+                //print "-- break is conflict"; 
+
+                return true;
+            } 
+        } 
+    }
+    //print "-- break is not conflict"; 
+    return false;
+}
+
+
 /**
  *
  *
