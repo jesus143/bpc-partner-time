@@ -1,9 +1,18 @@
-<?php
+<?php 
+function bpc_print_console_js($message)
+    { 
+        ?> 
+            <script>
+                var msg = '<?php echo $message; ?>';
+                console.log(msg); 
+            </script> 
+        <?php 
+    }
 
-    /**
-     *  This will convert the serialized format of data 
-     */
-   function bpc_convertToPropperDateTime($var_array)
+/**
+ *  This will convert the serialized format of data
+ */
+function bpc_convertToPropperDateTime($var_array)
     { 
         // bpc_as_print_r_pre($var_array); 
  
@@ -54,7 +63,6 @@ function bpc_isAppointmentConflictWithBreak($resultBreaks, $timeA) {
     //print "-- break is not conflict"; 
     return false;
 }
-
 
 /**
  *

@@ -16,7 +16,8 @@
 
 
 
-    print " Current Date Time " . Date("Y-m-d H:i a");
+    // print " Current Date Time " . Date("Y-m-d H:i a");
+    bpc_print_console_js(" Current Date Time " . Date("Y-m-d H:i a")); 
     /**
      * Initialized data and variables
      */
@@ -49,6 +50,11 @@
      * then set check display morning, noon, evening
      */
     if($book_time_type == 'Book Time Of Day') {
+
+
+        bpc_print_console_js("  currently its Book Time Of Day ");
+
+
          //print "<br>inside book time of day if condition";
          /**
          * Get current day of the selected date
@@ -69,28 +75,50 @@
          //print "<br> current horu $Hour";
 
 
-         if ( $Hour >= 5 && $Hour <= 11 ) {
-             // allow morning, noon and evening
-             //echo "<br>Good Morning";
+         // check if selected date is today
+        $date =  date('Y-m-d');
+        bpc_print_console_js("  selected date $datetofetch == current date " . $date);
 
+
+
+
+         if($datetofetch == date('Y-m-d')) {
+
+
+             bpc_print_console_js("  current selected is today");
+
+             if ( $Hour >= 5 && $Hour <= 11 ) {
+                 // allow morning, noon and evening
+                 //echo "<br>Good Morning";
+
+                 $morning   =  $standardSetting[0][$day . '_morning'];
+                 $afternoon =  $standardSetting[0][$day . '_afternoon'];
+                 $evening   =  $standardSetting[0][$day . '_evening'];
+
+             } else if ( $Hour >= 12 && $Hour <= 18 ) {
+
+                 // allow noon and evening
+                 //echo "<br>Good Afternoon";
+                 $afternoon =  $standardSetting[0][$day . '_afternoon'];
+                 $evening   =  $standardSetting[0][$day . '_evening'];
+
+             } else if ( $Hour >= 19 || $Hour <= 4 ) {
+
+                 // allow evening
+                 //echo "<br>Good Evening";
+                 $evening   =  $standardSetting[0][$day . '_evening'];
+
+             }
+
+         } else {
+
+             bpc_print_console_js("  current selected is not today");
              $morning   =  $standardSetting[0][$day . '_morning'];
              $afternoon =  $standardSetting[0][$day . '_afternoon'];
              $evening   =  $standardSetting[0][$day . '_evening'];
 
-         } else if ( $Hour >= 12 && $Hour <= 18 ) {
-
-             // allow noon and evening
-             //echo "<br>Good Afternoon";
-             $afternoon =  $standardSetting[0][$day . '_afternoon'];
-             $evening   =  $standardSetting[0][$day . '_evening'];
-
-         } else if ( $Hour >= 19 || $Hour <= 4 ) {
-
-             // allow evening
-             //echo "<br>Good Evening";
-             $evening   =  $standardSetting[0][$day . '_evening'];
-
          }
+
 
          /**
           * Generate and display ui
@@ -110,6 +138,7 @@
           */
          if($morning == '' && $afternoon == '' && $evening == '')
          {
+             bpc_print_console_js(" no results");
              bpc_print_no_time_display();
          }
          else
@@ -139,7 +168,13 @@
                          }
                          if($evening == 'yes')
                          {
-                             print '<li>
+                             print '<li>';
+
+                                if($morning == 'yes') {
+                                    print '<div style="height:20px;"> </div>';
+                                }
+
+                            print '
                                 <input name="time" value="Evening" type="radio" id="e3ve-time" class="e3ve-cl-time" onclick="timeFunction(); bpc_tick_time_set_bg(3)">
                                 <span class="e3ve-cl-times" id="e3ve-cl-times-3">Evening</span>
                             </li>';
@@ -164,7 +199,10 @@
         // print_r_pre($rows);
 
         if (!empty($rows)) {
-            print " from wp_bpc_appointment_settings database table ";
+            // print " from wp_bpc_appointment_settings database table ";
+            bpc_print_console_js(" from wp_bpc_appointment_settings database table ");
+
+
             /** Initialized the retrieved data from database table phone settings in testing */
             foreach ($rows as $obj) :
                 $id                 = $obj->id;
@@ -194,7 +232,8 @@
   
         } else {
 
-             print " empty from wp_bpc_appointment_setting_standard database table ";
+             // print " empty from wp_bpc_appointment_setting_standard database table ";
+             bpc_print_console_js(" empty from wp_bpc_appointment_setting_standard database table ");
 
             /** get standard settings */
             $resultStandard = $mydb->get_results("SELECT * FROM wp_bpc_appointment_setting_standard WHERE partner_id = $partner_id", ARRAY_A);
@@ -274,8 +313,13 @@
         $open_from = date("H:i", strtotime($call_back_delay_1, $time_1));
         // print " <br> newTimeWithCallBackDelay $open_from"; 
    
-        print "<br> call back length $call_back_length ";
-        print "<br> call back delay $call_back_delay ";
+        // print "<br> call back length $call_back_length ";
+        // print "<br> call back delay $call_back_delay ";
+
+        bpc_print_console_js(" call back length $call_back_length ");
+        bpc_print_console_js(" call back delay $call_back_delay ");
+
+
         // print "begin $open_from, interval $call_back_length, end $open_to date to fetch $datetofetch <br>";
 
         /**
@@ -347,7 +391,8 @@
                         $timeField[] = "<li><input name='time' value='$timeA' type='radio' id='e3ve-time' class='e3ve-cl-time' onclick='timeFunction(); bpc_tick_time_set_bg(\"$counter\")'  ><span class='e3ve-cl-times' id='e3ve-cl-times-$counter'>$timeA</span></li>";
                     } else {
                            $timeA = $time->format('h:i A'); 
-                        print "<br> conflict with break " . $timeA; 
+                        //print "<br> conflict with break " . $timeA; 
+                        bpc_print_console_js( " conflict with break " . $timeA );
                     }
  
                 }
@@ -360,7 +405,8 @@
                     $timeField[] = "<li><input name='time' value='$timeA' type='radio' id='e3ve-time' class='e3ve-cl-time' onclick='timeFunction(); bpc_tick_time_set_bg(\"$counter\")' ><span class='e3ve-cl-times' id='e3ve-cl-times-$counter'>$timeA</span></li>";
                 } else {
                     $timeA = $time->format('h:i A'); 
-                    print "<br> conflict with break " . $timeA; 
+                    //print "<br> conflict with break " . $timeA; 
+                    bpc_print_console_js( " conflict with break " . $timeA );
                 }
             }
         }
