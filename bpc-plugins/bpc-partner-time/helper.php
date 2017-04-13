@@ -3,7 +3,9 @@
 
      function print_r_pre($string)
      {
+
          print "<pre>";
+
          print_r($string);
          print "</pre>";
      }

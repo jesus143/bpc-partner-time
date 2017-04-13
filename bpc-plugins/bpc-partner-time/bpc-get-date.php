@@ -1,0 +1,435 @@
+<?php
+
+    /**
+     * Require files external and internal
+     */
+    require_once($_SERVER['DOCUMENT_ROOT'] . "/wp-load.php");
+    require_once($_SERVER['DOCUMENT_ROOT'] .  "/wp-content/plugins/bpc-partner-time/helper.php");
+    require_once("includes/bpc_partner_time_helper.php");
+
+    // date_default_timezone_set("Asia/Almaty");
+    date_default_timezone_set("Europe/London");
+    // ini_set('date.timezone', 'Europe/London');
+    // ini_set('date.timezone', 'Europe/London');
+
+    // date_default_timezone_set('UTC');
+
+
+
+    // print " Current Date Time " . Date("Y-m-d H:i a");
+    bpc_print_console_js(" Current Date Time " . Date("Y-m-d H:i a")); 
+    /**
+     * Initialized data and variables
+     */
+
+    $datenow      = $_GET['datenow'];
+
+    $partner_id   = $_GET['partnerid'];
+
+    $datepiece    = explode("/", $datenow); // 22/01/2017 -dd/mm/yyyy
+
+    $datetofetch  = $datepiece[2] . '-' . $datepiece[1] . '-' . $datepiece[0]; //2017-01-16 - yyyy-mm-dd
+
+    $mydb         = new wpdb('dbo639369002', '1qazxsw2!QAZXSW@', 'db639369002', 'db639369002.db.1and1.com');
+
+    $morning      = '';
+
+    $afternoon    = '';
+
+    $evening      = '';
+
+    /**
+     * Get current user standard settings
+     */
+    $standardSetting = $mydb->get_results("SELECT * FROM wp_bpc_appointment_setting_standard WHERE partner_id = $partner_id ", ARRAY_A);
+    $book_time_type  = $standardSetting[0]['book_time_type'];
+
+    /**
+     * Check if standard book time type is "book time of day"
+     * If book time type is book time of day
+     * then set check display morning, noon, evening
+     */
+    if($book_time_type == 'Book Time Of Day') {
+
+
+        bpc_print_console_js("  currently its Book Time Of Day ");
+
+
+         //print "<br>inside book time of day if condition";
+         /**
+         * Get current day of the selected date
+         */
+         $day = strtolower(date('l', strtotime($datetofetch)));
+
+         //print "<Br> current day selected " . $day;
+
+        /**
+         * Get selected checked for morning, noon and evening in specific day to standard
+         * check current uk time and get status morning, noon or evening
+         * then only display button the match the day status of uk time
+         * so if uk time is noon then only display noon and evening
+         * display ui for morning, noon, evening
+         */
+         $Hour = date('G');
+
+         //print "<br> current horu $Hour";
+
+
+         // check if selected date is today
+        $date =  date('Y-m-d');
+        bpc_print_console_js("  selected date $datetofetch == current date " . $date);
+
+
+
+
+         if($datetofetch == date('Y-m-d')) {
+
+
+             bpc_print_console_js("  current selected is today");
+
+             if ( $Hour >= 5 && $Hour <= 11 ) {
+                 // allow morning, noon and evening
+                 //echo "<br>Good Morning";
+
+                 $morning   =  $standardSetting[0][$day . '_morning'];
+                 $afternoon =  $standardSetting[0][$day . '_afternoon'];
+                 $evening   =  $standardSetting[0][$day . '_evening'];
+
+             } else if ( $Hour >= 12 && $Hour <= 18 ) {
+
+                 // allow noon and evening
+                 //echo "<br>Good Afternoon";
+                 $afternoon =  $standardSetting[0][$day . '_afternoon'];
+                 $evening   =  $standardSetting[0][$day . '_evening'];
+
+             } else if ( $Hour >= 19 || $Hour <= 4 ) {
+
+                 // allow evening
+                 //echo "<br>Good Evening";
+                 $evening   =  $standardSetting[0][$day . '_evening'];
+
+             }
+
+         } else {
+
+             bpc_print_console_js("  current selected is not today");
+             $morning   =  $standardSetting[0][$day . '_morning'];
+             $afternoon =  $standardSetting[0][$day . '_afternoon'];
+             $evening   =  $standardSetting[0][$day . '_evening'];
+
+         }
+
+
+         /**
+          * Generate and display ui
+          */
+        ?>
+         <style>
+             .time-day-button li {
+                 display: inline;;
+             }
+             .e3ve-home-time h1 {
+                 color:white !important;
+             }
+         </style>
+         <?php
+         /**
+          * If morning, afternoon, and evening is empty
+          */
+         if($morning == '' && $afternoon == '' && $evening == '')
+         {
+             bpc_print_console_js(" no results");
+             bpc_print_no_time_display();
+         }
+         else
+         { ?> 
+            <div class="home-time-box" >
+                <div class="home-time-box-heading" style="height: 43px;"> 
+                </div>
+                <div class="home-time-content" style="padding:19px; height: 154px;">
+                    <div class="e3ve-home-time">
+                        <ul class="left-time time-day-button" style="width:100% !important">
+
+                         <?php
+                         if($morning == 'yes')
+                         {
+                             print '<li>
+                                <input name="time" value="Morning" type="radio" id="e3ve-time" class="e3ve-cl-time" onclick="timeFunction();bpc_tick_time_set_bg(1)">
+                                <span class="e3ve-cl-times" id="e3ve-cl-times-1">Morning</span>
+                            </li>';
+                         }
+                         if($afternoon == 'yes')
+                         {
+                             // print '<input name="time" value="Afternoon" type="radio" id="e3ve-time" class="e3ve-cl-time" onclick="timeFunction() ">';
+                             print '<li>
+                                <input name="time" value="Afternoon" type="radio" id="e3ve-time" class="e3ve-cl-time" onclick="timeFunction();bpc_tick_time_set_bg(2)">
+                                <span class="e3ve-cl-times" id="e3ve-cl-times-2">Afternoon</span>
+                            </li>';
+                         }
+                         if($evening == 'yes')
+                         {
+                             print '<li>';
+
+                                if($morning == 'yes') {
+                                    print '<div style="height:20px;"> </div>';
+                                }
+
+                            print '
+                                <input name="time" value="Evening" type="radio" id="e3ve-time" class="e3ve-cl-time" onclick="timeFunction(); bpc_tick_time_set_bg(3)">
+                                <span class="e3ve-cl-times" id="e3ve-cl-times-3">Evening</span>
+                            </li>';
+                         }
+
+                         ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <?php
+
+
+        }
+    } else {
+
+        // print "<br>inside book exact time ";
+
+        // Get appointment settings based on specific date and partner id 
+        $rows = $mydb->get_results("SELECT * FROM wp_bpc_appointment_settings WHERE partner_id = $partner_id && date = '$datetofetch'");
+
+        // print_r_pre($rows);
+
+        if (!empty($rows)) {
+            // print " from wp_bpc_appointment_settings database table ";
+            bpc_print_console_js(" from wp_bpc_appointment_settings database table ");
+
+
+            /** Initialized the retrieved data from database table phone settings in testing */
+            foreach ($rows as $obj) :
+                $id                 = $obj->id;
+                $date               = $obj->date;
+                $open_from          = $obj->open_from;
+                $open_to            = $obj->open_to;
+                $call_back_length   = $obj->call_back_length;
+                $call_back_delay    = $obj->call_back_delay;
+                $updated_at         = $obj->updated_at;
+                $updatepiece        = explode(" ", $updated_at); // 2017-01-21 16:44:31 -yyyy-mm-dd hh:mm:ss
+                $updateddate        = $updatepiece[0]; //2017-01-21
+                $updatedpiece       = $updatepiece[1]; //16:44:31
+                $updatetimepiece    = explode(":", $updatedpiece);
+                $updatedtime        = $updatetimepiece[0] . ':' . $updatetimepiece[1];
+            endforeach;
+
+
+
+            /**
+             * Get custom break
+             */
+            $resultBreaks = $mydb->get_results("SELECT * FROM wp_bpc_appointment_setting_breaks WHERE appointment_setting_id = " . $id, ARRAY_A);   
+
+            // print "<pre>"; 
+            //     print_r($resultBreaks); 
+            // print "</pre>"; 
+  
+        } else {
+
+             // print " empty from wp_bpc_appointment_setting_standard database table ";
+             bpc_print_console_js(" empty from wp_bpc_appointment_setting_standard database table ");
+
+            /** get standard settings */
+            $resultStandard = $mydb->get_results("SELECT * FROM wp_bpc_appointment_setting_standard WHERE partner_id = $partner_id", ARRAY_A);
+            $rows = $resultStandard[0];
+
+            /** Get day based on query date */
+            $day = strtolower(date('l', strtotime($datetofetch)));
+            // print "<br> clicked day $day"; 
+ 
+            /** Get specific open_from and open_to based on standard settings results */
+            $open_from = $rows[$day . '_open_from'];
+            $open_to = $rows[$day . '_open_to']; 
+            // print "<br> open from $open_from <br> open to $open_to"; 
+
+            /** if call back lenght is empty then set 15 mins default call back lenght */
+            $call_back_delay = $rows['call_back_delay'];
+
+            /** if call back delay is empty then set 15 mins default call back delay */
+            $call_back_length = $rows['call_back_length'];
+
+            /** specific date set */
+            $date =  $datetofetch; 
+            
+            // print "<br> date $date"; 
+            /**
+             * Set updated at but this is actually the open from time of standard time
+             * @var [type]
+             */
+            $updated_at         = date('Y-m-d') . ' ' . $open_from . ':00';
+            $updatepiece        = explode(" ", $updated_at); // 2017-01-21 16:44:31 -yyyy-mm-dd hh:mm:ss
+            $updateddate        = $updatepiece[0]; //2017-01-21
+            $updatedpiece       = $updatepiece[1]; //16:44:31
+            $updatetimepiece    = explode(":", $updatedpiece);
+            $updatedtime        = $updatetimepiece[0] . ':' . $updatetimepiece[1];
+            // print "<br> Updated at " .  $updated_at; 
+            // print "<br> date piece  " .  $updateddate; 
+            // print "<br> time peice " .  $updatedpiece;  
+ 
+            /**
+            * Get custom break
+            */
+            $resultBreaks = []; 
+            $resultBreaks = $rows[$day . '_break'];
+            $breakTime = unserialize($resultBreaks);  
+            if(!empty($breakTime['break_time_hour_min'])) {
+                $resultBreaks = bpc_convertToPropperDateTime($breakTime['break_time_hour_min']); 
+            }   
+
+            // print "<pre>";
+            // print "<br> breaks";
+            // print_r( $resultBreaks ); 
+            // print "</pre>";
+        }
+
+
+
+        /**
+         * if call back lenght is empty then set 15 mins default call back lenght
+         */
+        if ($call_back_length == '') {
+            $call_back_length = '15 mins';
+        }
+
+        /**
+         * if call back delay is empty then set 15 mins default call back delay
+         */
+        if ($call_back_delay == '') {
+            $call_back_delay = '15 mins';
+        }
+ 
+        /**
+         *  This is needed so that client can't book any of the callbacks delay
+         */  
+        $call_back_delay_1 = str_replace('mins', 'minutes', $call_back_delay); 
+        $call_back_delay_1 = str_replace('hours', 'hour', $call_back_delay_1); 
+        $time_1 = strtotime($open_from);
+        $open_from = date("H:i", strtotime($call_back_delay_1, $time_1));
+        // print " <br> newTimeWithCallBackDelay $open_from"; 
+   
+        // print "<br> call back length $call_back_length ";
+        // print "<br> call back delay $call_back_delay ";
+
+        bpc_print_console_js(" call back length $call_back_length ");
+        bpc_print_console_js(" call back delay $call_back_delay ");
+
+
+        // print "begin $open_from, interval $call_back_length, end $open_to date to fetch $datetofetch <br>";
+
+        /**
+         * initialized open from and open to as date
+         */
+        $begin = new DateTime($open_from);
+        $end = new DateTime($open_to);
+
+        /**
+         * compose the interval as date
+         */
+        $interval = DateInterval::createFromDateString($call_back_length);
+
+        /**
+         * set begin, interval and end as date period
+         */
+        $times = new DatePeriod($begin, $interval, $end);
+
+        print '<ul class="left-time">';
+
+        //print "test date breaks";
+        /**
+         * Inialized data
+         */
+        $currenttime = date('H:i');
+        $currentdate = date("Y-m-d");
+        $callbackdelayandcurrenttime = strtotime($call_back_delay, strtotime($updatedtime));
+        $callbackdelayandupdatedtimetotal = date('H:i', $callbackdelayandcurrenttime);
+        $container = 0;
+        $counter = 0;
+
+        
+        /**
+         * Calculate date times
+         */
+        $appointmentConflictWithBreak = false;
+        foreach ($times as $time) {
+
+
+                /**
+                 * check if open appointment schedule is not conflict with break
+                 */ 
+               
+               
+                $appointmentConflictWithBreak = bpc_isAppointmentConflictWithBreak($resultBreaks, $time->format('H:i')); 
+
+
+
+            /**
+             * If today and current time and available appointment schedule is greater than current time
+             * then allow execute 
+             */
+            if (($time->format('H:i') >= $currenttime) and ($date == $currentdate)) {
+
+
+                if (($updateddate == $currentdate) and ($time->format('H:i') >= $updatedtime) and ($time->format('H:i') <= $callbackdelayandupdatedtimetotal)) {
+                    // print "before call back delay arrive"; 
+                    //'In between the Call Back Delay';
+                } else {
+
+                    // print "<br> date today i think, and display available appointment time "; 
+
+ 
+
+                    if($appointmentConflictWithBreak == false) { 
+                        $counter++;
+                        $container = 1;
+                        $timeA = $time->format('h:i A'); 
+                        $timeField[] = "<li><input name='time' value='$timeA' type='radio' id='e3ve-time' class='e3ve-cl-time' onclick='timeFunction(); bpc_tick_time_set_bg(\"$counter\")'  ><span class='e3ve-cl-times' id='e3ve-cl-times-$counter'>$timeA</span></li>";
+                    } else {
+                           $timeA = $time->format('h:i A'); 
+                        //print "<br> conflict with break " . $timeA; 
+                        bpc_print_console_js( " conflict with break " . $timeA );
+                    }
+ 
+                }
+            }   else if ($date <> $currentdate) { 
+                if($appointmentConflictWithBreak == false) { 
+
+                    // print " date is not today"; 
+                    $timeA = $time->format('h:i A');
+                    $counter++;
+                    $timeField[] = "<li><input name='time' value='$timeA' type='radio' id='e3ve-time' class='e3ve-cl-time' onclick='timeFunction(); bpc_tick_time_set_bg(\"$counter\")' ><span class='e3ve-cl-times' id='e3ve-cl-times-$counter'>$timeA</span></li>";
+                } else {
+                    $timeA = $time->format('h:i A'); 
+                    //print "<br> conflict with break " . $timeA; 
+                    bpc_print_console_js( " conflict with break " . $timeA );
+                }
+            }
+        }
+
+        /**
+         * if timme field is not empty then display date times
+         */
+        if (!empty($timeField)) {
+
+            /** @var  $timeResultsArr */
+            $timeResultsArr = bpc_getTimeResults($timeField);
+
+            /**  */
+            bpc_print_time($timeResultsArr);
+
+        } else {
+            /**
+             * if time field is empty then display, No Schedule Display
+             */
+            bpc_print_no_time_display();
+
+        }
+
+    }
+
+
